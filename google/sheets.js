@@ -1,7 +1,7 @@
 const { google } = require('googleapis');
 const credentials = require('../secrets/google-credentials.json'); // path to your service account file
 const config = require('../config.json'); // contains spreadsheet ID
-const output = require('../utilities/output');
+const output = require('../utilities/output.js');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const auth = new google.auth.GoogleAuth({

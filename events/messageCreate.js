@@ -1,6 +1,6 @@
 const md5 = require('md5');
 const config = require('../config.json')
-const output = require('../utilities/output');
+const output = require('../utilities/output.js/index.js');
 const { handleQuery } = require('../sotd/handleQuery.js')
 
 module.exports = {

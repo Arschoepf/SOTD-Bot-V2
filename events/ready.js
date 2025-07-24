@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const output = require('../utilities/output'); // adjust path if needed
+const output = require('../utilities/output.js'); // adjust path if needed
 
 module.exports = {
   name: Events.ClientReady,

@@ -51,7 +51,7 @@ client.login(tokens.discord_token);
 function loadCommandsRecursively(dir) {
   const files = fs.readdirSync(dir, { withFileTypes: true });
 
-    // Loop through all files in directory
+  // Loop through all files in directory
   for (const file of files) {
     const filePath = path.join(dir, file.name);
 

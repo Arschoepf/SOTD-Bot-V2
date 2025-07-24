@@ -1,27 +1,27 @@
 {
-	"clientId": "1395399103977885780",
-	"guildId": "1393687737252712458",
-    "googleSheetId": "1fdXyqXzRdVCTjaS9YRUH4qI1DSy0ULXo1zxAp8BSZ3w",
-    "spotifyPlaylistId": "68PZnsmMjLNBP4LRHZ2bY2",
-    "loggingSheetName": "unofficial wmtu sotd",
-    "columns": {
-        "sotdNo": 0,
-        "playNo": 1,
-        "maintenance": 2,
-        "song": 3,
-        "artist": 4,
-        "album": 5,
-        "userId": 6,
-        "userTag": 7,
-        "date": 8,
-        "md5": 9,
-        "flags": 10,
-        "messageId": 11,
-        "reactions": 12,
-        "notes": 13
-    },
-    "channels": [
-        "1393687737739120724",
-        "1341783026845352068"
-    ]
+  "clientId": "1395399103977885780",
+  "guildId": "1393687737252712458",
+  "googleSheetId": "1fdXyqXzRdVCTjaS9YRUH4qI1DSy0ULXo1zxAp8BSZ3w",
+  "spotifyPlaylistId": "68PZnsmMjLNBP4LRHZ2bY2",
+  "loggingSheetName": "unofficial wmtu sotd",
+  "columns": {
+    "sotdNo": 0,
+    "playNo": 1,
+    "maintenance": 2,
+    "song": 3,
+    "artist": 4,
+    "album": 5,
+    "userId": 6,
+    "userTag": 7,
+    "date": 8,
+    "md5": 9,
+    "flags": 10,
+    "messageId": 11,
+    "reactions": 12,
+    "notes": 13
+  },
+  "channels": [
+    "1393687737739120724",
+    "1341783026845352068"
+  ]
 }
