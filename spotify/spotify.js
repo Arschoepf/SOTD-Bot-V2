@@ -1,5 +1,6 @@
 const axios = require('axios');
 const config = require('../config.json');
+const tokens = require('../secrets/tokens.json');
 
 let cachedToken = null;
 let tokenExpiresAt = 0;
@@ -12,7 +13,7 @@ async function getSpotifyToken() {
     new URLSearchParams({ grant_type: 'client_credentials' }), {
     headers: {
       'Authorization': 'Basic ' + Buffer.from(
-        config.spotifyClientId + ':' + config.spotifyClientSecret
+        tokens.spotifyClientId + ':' + tokens.spotifyClientSecret
       ).toString('base64'),
       'Content-Type': 'application/x-www-form-urlencoded',
     },

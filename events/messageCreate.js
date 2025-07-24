@@ -30,7 +30,7 @@ module.exports = {
     }
 
     output.logr(`Message matched song format!`, requestId, 1);
-    handleQuery(query, requestId, message.author.id);
+    handleQuery(query, message, requestId, message.author.id);
 
   },
 };

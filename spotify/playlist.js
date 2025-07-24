@@ -1,16 +1,17 @@
 const axios = require('axios');
 const config = require('../config.json');
+const tokens = require('../secrets/tokens.json');
 
 async function getAccessToken() {
   const res = await axios.post('https://accounts.spotify.com/api/token',
     new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: config.spotifyRefreshToken
+      refresh_token: tokens.spotifyRefreshToken
     }),
     {
       headers: {
         Authorization: 'Basic ' + Buffer.from(
-          config.spotifyClientId + ':' + config.spotifyClientSecret
+          tokens.spotifyClientId + ':' + tokens.spotifyClientSecret
         ).toString('base64'),
         'Content-Type': 'application/x-www-form-urlencoded'
       }

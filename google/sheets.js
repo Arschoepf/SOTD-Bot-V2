@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const credentials = require('../secrets/google-credentials.json'); // path to your service account file
 const config = require('../config.json'); // contains spreadsheet ID
+const output = require('../utilities/output');
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const auth = new google.auth.GoogleAuth({
@@ -44,7 +45,9 @@ function getFormattedDateEST() {
   return formatter.format(now); // e.g. "07/12/25"
 }
 
-async function hasSubmittedToday(spreadsheetId, sheetName, userId) {
+async function hasSubmittedToday(spreadsheetId, sheetName, userId, requestId) {
+  output.logr(`Checking for submissions today`, requestId, 1);
+
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range: `${sheetName}!A2:M`
@@ -54,10 +57,17 @@ async function hasSubmittedToday(spreadsheetId, sheetName, userId) {
   const today = getFormattedDateEST();
 
   return rows.some(row => {
-    const date = row[config.columnDate];
-    const id = row[config.columnUserId];
-    const flags = row[config.columnFlags];
-    return (date === today && id === userId && !flags.includes('X'));
+    const date = row[config.columns.date];
+    const id = row[config.columns.userId];
+    const flags = row[config.columns.flags] || '';
+
+    if (date === today && id === userId && flags.includes('X')) {
+      output.logr(`Partial submission detected, exempting...`, requestId, 2);
+    }
+
+    const result = (date === today && id === userId && !flags.includes('X'));
+    return result;
+
   });
 }
 
