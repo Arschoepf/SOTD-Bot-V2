@@ -10,9 +10,9 @@ function logr(msg, requestId, tabs = 0) {
 
 }
 
-function warn(msg, tabs = 0) {
+function warn(msg, tabs = 0, err) {
 
-  console.log('[WRN] ' + timestamp() + ' ' + tab(tabs) + msg)
+  console.log('[WRN] ' + timestamp() + ' ' + tab(tabs) + msg, err)
 
 }
 

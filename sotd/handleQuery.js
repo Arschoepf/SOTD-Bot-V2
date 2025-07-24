@@ -1,6 +1,6 @@
 const { hasSubmittedToday } = require('../google/sheets.js');
 const config = require('../config.json');
-const output = require('../utilities/output.js/index.js');
+const output = require('../utilities/output.js');
 
 async function handleQuery(query, message, requestId, userId) {
   if (await hasSubmittedToday(config.googleSheetId, config.loggingSheetName, userId, requestId)) {

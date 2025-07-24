@@ -17,7 +17,7 @@ module.exports = {
       const username = user.username;
       console.log('[' + reqId + ']     ' + user.username + ' on message ' + reaction.message.id);
 
-      if (await appendReactionEmoji(config.googleSheetId, config.loggingSheetName, messageId, emoji)) {
+      if (await appendReactionEmoji(config.googleSheetId, messageId, emoji)) {
         console.log('[' + reqId + ']     Logged in sheet!');
       }
       console.log('[' + reqId + ']     Done!');
