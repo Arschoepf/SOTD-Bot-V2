@@ -65,8 +65,8 @@ function loadCommandsRecursively(dir) {
       // Load command if .js file
       const command = require(filePath);
       if (command?.data?.name && typeof command.execute === 'function') {
-        output.log('loaded command ' + command.data.name, 1);
         client.commands.set(command.data.name, command);
+        output.log('loaded command ' + command.data.name, 1);
       } else {
         output.warn(`Skipped loading invalid command file: ${filePath}`);
       }
@@ -91,12 +91,12 @@ function loadEventsRecursively(dir) {
 
       // Load event if .js file
       const event = require(filePath);
-      output.log('loaded event ' + event.name, 1);
       if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
       } else {
         client.on(event.name, (...args) => event.execute(...args));
       }
+      output.log('loaded event ' + event.name, 1);
     }
   }
 }

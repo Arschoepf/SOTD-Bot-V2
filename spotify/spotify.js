@@ -50,11 +50,6 @@ async function getSpotifyTrack(link) {
   return res.data;
 }
 
-module.exports = {
-  searchSpotifyTrack,
-  getSpotifyTrack
-};
-
 async function getSpotifyTrackId(input) {
   if (!input) return null;
 
@@ -68,3 +63,9 @@ async function getSpotifyTrackId(input) {
 
   return null;
 }
+
+module.exports = {
+  searchSpotifyTrack,
+  getSpotifyTrack,
+  getSpotifyTrackId
+};

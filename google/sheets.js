@@ -45,7 +45,7 @@ function getFormattedDateEST() {
   return formatter.format(now); // e.g. "07/12/25"
 }
 
-async function hasSubmittedToday(spreadsheetId, userId, requestId) {
+async function hasSubmittedToday(spreadsheetId, userId, requestId, fromMessage) {
   output.logr(`Checking for submissions today`, requestId, 1);
 
   const res = await sheets.spreadsheets.values.get({
@@ -61,12 +61,35 @@ async function hasSubmittedToday(spreadsheetId, userId, requestId) {
     const id = row[config.columns.userId];
     const flags = row[config.columns.flags] || '';
 
-    if (date === today && id === userId && flags.includes('X')) {
-      output.logr(`Partial submission detected, exempting...`, requestId, 2);
-    }
+    // Check if user has submitted today
+    // Will exempt an X flag if request is from a command
+    const match = (date === today && id === userId);
 
-    const result = (date === today && id === userId && !flags.includes('X'));
-    return result;
+    if (match) {
+      // If there is any match for today
+      output.logr(`Submission detected today`, requestId, 2);
+
+      if (flags.includes('X')) {
+        // Match has partial flag
+        output.logr(`Partial submission`, requestId, 3);
+
+        if (fromMessage) {
+          output.logr(`Triggered via message`, requestId, 4);
+          return true;
+        } else {
+          output.logr(`Triggered via command. Exempting...`, requestId, 4);
+          return false;
+        }
+      } else {
+        // Match does not have partial flag
+        return true;
+      }
+
+
+    } else {
+      // No matches today
+      return false;
+    }
 
   });
 }
@@ -106,6 +129,32 @@ async function appendReactionEmoji(spreadsheetId, messageId, emojiRaw) {
   return true;
 }
 
+async function updateTempRow(spreadsheetId, userId, values) {
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${config.loggingSheetName}!A2:M`
+  });
+
+  const rows = res.data.values || [];
+
+  // Assume Message ID is in column L (index 11)
+  const rowIndex = rows.findIndex(row => row[config.columns.messageId] === messageId);
+  if (rowIndex === -1) return false;
+
+  const cellRange = `${config.loggingSheetName}!A${rowIndex + 2}:K${rowIndex + 2}`;
+
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: cellRange,
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [values]
+    }
+  });
+
+  return true;
+}
+
 function columnLetter(col) {
   let letter = '';
   while (col > 0) {
@@ -134,4 +183,4 @@ async function getRecentMessageIds(spreadsheetId, maxCount = 50) {
   return recent;
 }
 
-module.exports = { appendRow, getAllMd5Hashes, hasSubmittedToday, appendReactionEmoji, getRecentMessageIds };
+module.exports = { appendRow, getAllMd5Hashes, hasSubmittedToday, appendReactionEmoji, getRecentMessageIds, getFormattedDateEST, updateTempRow };

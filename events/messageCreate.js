@@ -12,7 +12,7 @@ module.exports = {
 
     // Create new request ID to identify and log to console
     const requestId = md5(new Date()).slice(0, 8);
-    output.logr(`Request created by ${message.author.tag}`, requestId)
+    output.logr(`Message request created by ${message.author.tag}`, requestId)
 
     // Check if message was sent in approved channel
     if (!config.channels.includes(message.channel.id)) {
@@ -22,15 +22,22 @@ module.exports = {
 
     // Separate message content
     const query = message.content;
+    let isTrack = false;
 
-    //Check if message matches format
-    if (!query.match(/^(.+?)\s*-\s*(.+)$/)) {
-      output.logr(`Message does not match song format. Cancelled.`, requestId, 1);
-      return;
+    // Check if message matches track format
+    if (query.match(/spotify\.com\/track\/([a-zA-Z0-9]{22})/)) {
+      isTrack = true;
+    } else {
+      //Check if message matches song format
+      if (!query.match(/^(.+?)\s*-\s*(.+)$/)) {
+        output.logr(`Message does not match format. Cancelled.`, requestId, 1);
+        return;
+      }
     }
 
     output.logr(`Message matched song format!`, requestId, 1);
-    handleQuery(query, message, requestId, message.author.id);
+    await handleQuery(query, message, requestId, message.author.id, isTrack, true);
 
+    output.logr(`Done!`, requestId, 1);
   },
 };
