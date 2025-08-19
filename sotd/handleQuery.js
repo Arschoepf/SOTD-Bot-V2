@@ -5,7 +5,7 @@ const { searchSpotifyTrack, getSpotifyTrack } = require('../spotify/spotify.js')
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require('discord.js');
 const md5 = require('md5');
 
-async function handleQuery(query, message, requestId, userId, isTrack = false, fromMessage = false) {
+async function handleQuery(query, message, requestId, userId, isLink = false, fromMessage = false) {
   if (await hasSubmittedToday(config.googleSheetId, userId, requestId, fromMessage)) {
 
     // Already submitted today
@@ -33,7 +33,7 @@ async function handleQuery(query, message, requestId, userId, isTrack = false, f
   ]);
 
   let track;
-  if (!isTrack) {
+  if (!isLink) {
     output.logr(`Searching spotify for '${query}'`, requestId, 2);
     track = await searchSpotifyTrack(query);
   } else {

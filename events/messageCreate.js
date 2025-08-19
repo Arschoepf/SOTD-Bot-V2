@@ -22,11 +22,11 @@ module.exports = {
 
     // Separate message content
     const query = message.content;
-    let isTrack = false;
+    let isLink = false;
 
     // Check if message matches track format
     if (query.match(/spotify\.com\/track\/([a-zA-Z0-9]{22})/)) {
-      isTrack = true;
+      isLink = true;
     } else {
       //Check if message matches song format
       if (!query.match(/^(.+?)\s*-\s*(.+)$/)) {
@@ -36,7 +36,7 @@ module.exports = {
     }
 
     output.logr(`Message matched song format!`, requestId, 1);
-    await handleQuery(query, message, requestId, message.author.id, isTrack, true);
+    await handleQuery(query, message, requestId, message.author.id, isLink, true);
 
     output.logr(`Done!`, requestId, 1);
   },
