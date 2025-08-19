@@ -129,7 +129,7 @@ async function appendReactionEmoji(spreadsheetId, messageId, emojiRaw) {
   return true;
 }
 
-async function updateTempRow(spreadsheetId, userId, values) {
+async function updateTempRow(spreadsheetId, userId, date, values) {
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range: `${config.loggingSheetName}!A2:M`
@@ -138,10 +138,10 @@ async function updateTempRow(spreadsheetId, userId, values) {
   const rows = res.data.values || [];
 
   // Assume Message ID is in column L (index 11)
-  const rowIndex = rows.findIndex(row => row[config.columns.messageId] === messageId);
+  const rowIndex = rows.findIndex(row => (row[config.columns.userId] === userId) && row[config.columns.date] === date);
   if (rowIndex === -1) return false;
 
-  const cellRange = `${config.loggingSheetName}!A${rowIndex + 2}:K${rowIndex + 2}`;
+  const cellRange = `${config.loggingSheetName}!A${rowIndex + 2}:L${rowIndex + 2}`;
 
   await sheets.spreadsheets.values.update({
     spreadsheetId,
@@ -153,6 +153,20 @@ async function updateTempRow(spreadsheetId, userId, values) {
   });
 
   return true;
+}
+
+async function getRow(spreadsheetId, userId, date) {
+  const res = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${config.loggingSheetName}!A2:M`
+  });
+
+  const rows = res.data.values || [];
+
+  const rowIndex = rows.findIndex(row => (row[config.columns.userId] === userId) && row[config.columns.date] === date);
+  if (rowIndex === -1) return false;
+
+  return rows[rowIndex];
 }
 
 function columnLetter(col) {
@@ -183,4 +197,4 @@ async function getRecentMessageIds(spreadsheetId, maxCount = 50) {
   return recent;
 }
 
-module.exports = { appendRow, getAllMd5Hashes, hasSubmittedToday, appendReactionEmoji, getRecentMessageIds, getFormattedDateEST, updateTempRow };
+module.exports = { appendRow, getAllMd5Hashes, hasSubmittedToday, appendReactionEmoji, getRecentMessageIds, getFormattedDateEST, updateTempRow, getRow };

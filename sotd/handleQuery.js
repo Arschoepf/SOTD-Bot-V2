@@ -1,8 +1,9 @@
-const { hasSubmittedToday, appendRow, getFormattedDateEST } = require('../google/sheets.js');
+const { hasSubmittedToday, appendRow, getFormattedDateEST, updateTempRow, getAllMd5Hashes } = require('../google/sheets.js');
 const config = require('../config.json');
 const output = require('../utilities/output.js');
 const { searchSpotifyTrack, getSpotifyTrack } = require('../spotify/spotify.js');
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require('discord.js');
+const md5 = require('md5');
 
 async function handleQuery(query, message, requestId, userId, isTrack = false, fromMessage = false) {
   if (await hasSubmittedToday(config.googleSheetId, userId, requestId, fromMessage)) {
@@ -13,18 +14,19 @@ async function handleQuery(query, message, requestId, userId, isTrack = false, f
   }
 
   output.logr(`User has not submitted today`, requestId, 2);
+  let date = getFormattedDateEST();
 
   output.logr(`Appending temp row to sheet`, requestId, 2);
   await appendRow(config.googleSheetId, config.loggingSheetName, [
-    "=INDIRECT(CONCATENATE(\"R\",ROW()-1,\"C1\"),FALSE)+IF(REGEXMATCH(INDIRECT(CONCATENATE(\"R\",ROW(),\"C11\"),FALSE),\"[R]\"),0,1)",
-    "=INDIRECT(CONCATENATE(\"R\",ROW()-1,\"C2\"),FALSE)+IF(REGEXMATCH(INDIRECT(CONCATENATE(\"R\",ROW(),\"C11\"),FALSE),\"[RN]\"),0,1)",
+    "=INDIRECT(CONCATENATE(\"R\",ROW()-1,\"C1\"),FALSE)+IF(REGEXMATCH(INDIRECT(CONCATENATE(\"R\",ROW(),\"C11\"),FALSE),\"[R]\"),0,1)",  // Song Counter
+    "=INDIRECT(CONCATENATE(\"R\",ROW()-1,\"C2\"),FALSE)+IF(REGEXMATCH(INDIRECT(CONCATENATE(\"R\",ROW(),\"C11\"),FALSE),\"[RN]\"),0,1)", // Playlist Counter
     "FALSE",
     "",
     "",
     "",
     message.author.id,
-    "=LOOKUP(INDIRECT(CONCATENATE(\"R\",ROW(),\"C\",COLUMN()-1),FALSE),Users!$A$2:$A,Users!$B$2:$B)",
-    getFormattedDateEST(),
+    "=LOOKUP(INDIRECT(CONCATENATE(\"R\",ROW(),\"C\",COLUMN()-1),FALSE),Users!$A$2:$A,Users!$B$2:$B)", // Lookup Name fron ID
+    date,
     "",
     "X",
     message.id
@@ -87,6 +89,39 @@ async function handleQuery(query, message, requestId, userId, isTrack = false, f
   output.logr(`Song confirmed by user!`, requestId, 2);
   await confirmation.reply({ content: 'Song confirmed!', flags: MessageFlags.Ephemeral });
   await replyMessage.delete(); // Delete message when confirmed
+
+  const songHash = computeSongHash(track.name, track.artists.map(a => a.name));
+
+  // Check if already in the sheet
+  const existingHashes = await getAllMd5Hashes(config.googleSheetId);
+  const isDupe = existingHashes.has(songHash);
+
+  let flag = '';
+
+  if (isDupe) {
+    console.log('[' + reqId + ']     Detected duplicate! Adding flag \'R\'');
+    flag += 'R';
+  }
+
+  updateTempRow(config.googleSheetId, userId, date, [
+    ,
+    ,
+    ,
+    track.name,
+    track.artists.map(a => a.name).join(', '),
+    track.album.name,
+    ,
+    ,
+    ,
+    songHash,
+    flag,
+  ]);
 }
 
 module.exports = { handleQuery };
+
+function computeSongHash(name, artists) {
+  const norm = (s) => s.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
+  const base = norm(name) + artists.map(norm).join('');
+  return md5(base);
+}
