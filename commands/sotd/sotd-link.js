@@ -4,7 +4,7 @@ const { appendRow, getAllMd5Hashes, hasSubmittedToday } = require('../../google/
 const config = require('../../config.json'); // contains spreadsheet ID
 const { addToPlaylist } = require('../../spotify/playlist.js');
 const md5 = require('md5');
-
+const { handleQuery } = require('../../sotd/handleQuery.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
